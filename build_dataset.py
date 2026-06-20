@@ -40,7 +40,7 @@ import csv
 import os
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-DATA = os.path.join(HERE, "..", "data")
+DATA = os.path.join(HERE, "data")
 
 # (raw file, vintage_date, human-readable source)
 VINTAGES = [

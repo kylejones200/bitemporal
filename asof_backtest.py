@@ -94,7 +94,7 @@ def _demo() -> None:
     import os
 
     here = os.path.dirname(os.path.abspath(__file__))
-    csv_path = os.path.join(here, "..", "data", "unrate_vintages.csv")
+    csv_path = os.path.join(here, "data", "unrate_vintages.csv")
     s = BitemporalSeries.from_csv(csv_path)
 
     print("=" * 64)

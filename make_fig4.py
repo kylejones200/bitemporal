@@ -8,8 +8,8 @@ import pandas as pd
 
 from reserves import load_shell_reserves
 
-HERE = os.path.dirname(__file__)
-OUT = os.path.join(HERE, "..", "figures", "fig4_shell_restatement.png")
+HERE = os.path.dirname(os.path.abspath(__file__))
+OUT = os.path.join(HERE, "figures", "fig4_shell_restatement.png")
 
 s = load_shell_reserves()
 f = s.frame.sort_values("vintage_date")

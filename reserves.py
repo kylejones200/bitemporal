@@ -50,8 +50,8 @@ import pandas as pd
 
 from bitemporal import BitemporalSeries
 
-HERE = os.path.dirname(__file__)
-SHELL_CSV = os.path.join(HERE, "..", "data", "shell_reserves_vintages.csv")
+HERE = os.path.dirname(os.path.abspath(__file__))
+SHELL_CSV = os.path.join(HERE, "data", "shell_reserves_vintages.csv")
 
 
 # --------------------------------------------------------------------- #

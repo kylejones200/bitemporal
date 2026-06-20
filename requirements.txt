@@ -1,0 +1,6 @@
+pandas>=1.5
+requests>=2.28
+matplotlib>=3.6
+pandas_datareader>=0.10   # cleanest pull of the current FRED series (web.DataReader)
+# optional, for the test runner if you prefer pytest over `python src/test_bitemporal.py`
+# pytest>=7.0

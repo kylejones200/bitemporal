@@ -1,0 +1,7 @@
+period,vintage_date,reserves_boe_bn,source,event
+2002-12-31,2003-06-30,19.50,2002 Annual Report / Form 20-F (as originally booked),Original booking of YE2002 proved reserves
+2002-12-31,2004-01-09,15.60,Project Rockford recategorisation announcement,First restatement: -3.9 bn boe (20%) of YE2002 proved reserves recategorised as not proved
+2002-12-31,2004-03-18,15.35,Second recategorisation announcement,"Jan + Mar restatements combined -4.15 bn boe"
+2002-12-31,2004-04-19,15.03,First Half Review complete,"First Half Review total: 4.474 bn boe of YE2002 reserves recategorised (~23%)"
+2003-12-31,2004-06-30,14.35,Restated 2003 Annual Report / Form 20-F (filed 2004-06-30),YE2003 proved reserves as stated after First Reserves Restatement
+2003-12-31,2005-02-04,12.95,Second Half Review (Feb 4 2005),"YE2003 reduced by a further 1.4 bn boe; total reduction 5.87 bn boe (~30%) vs originally-reported YE2002"

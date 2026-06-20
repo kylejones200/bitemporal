@@ -207,57 +207,47 @@ def shell_cascade() -> DependencyGraph:
 # Standalone demo + figure generation
 # ------------------------------------------------------------------ #
 if __name__ == "__main__":
-    import matplotlib
-    matplotlib.use("Agg")
+    import matplotlib as mpl
     import matplotlib.pyplot as plt
+    mpl.use("Agg")
+    mpl.rcParams.update({"font.family": "serif", "axes.grid": False,
+                         "axes.spines.top": False, "axes.spines.right": False})
 
     g = shell_cascade()
 
-    before_date = "2003-09-01"   # before any restatement; 19.50 bn boe
-    after_date = "2004-05-01"    # after the First Half Review; 15.03 bn boe
+    before_date = "2003-09-01"
+    after_date  = "2004-05-01"
 
     diff = g.diff_cascade(before_date, after_date)
     print(f"Shell cascade diff: {before_date} → {after_date}")
     print(diff.to_string(index=False))
 
-    # -- Figure 6: before/after comparison per node --
     node_labels = {
         "proved_reserves": "Proved Reserves\n(bn boe)",
-        "eur": "EUR\n(bn boe)",
-        "npv_usd_bn": "NPV\n($bn)",
-    }
-    colors = {
-        "proved_reserves": "#1f4e79",
-        "eur": "#2e75b6",
-        "npv_usd_bn": "#b3122f",
+        "eur":             "EUR\n(bn boe)",
+        "npv_usd_bn":      "NPV\n($bn)",
     }
 
-    fig, axes = plt.subplots(1, 3, figsize=(12, 6.5))
+    fig, axes = plt.subplots(1, 3, figsize=(11, 5.5))
+    x = [0, 1]
     for ax, (_, row) in zip(axes, diff.iterrows()):
-        name = row["node"]
-        ax.bar(["Before\nRestatement"], [row["before"]],
-               color=colors[name], alpha=1.0, width=0.5, zorder=3)
-        ax.bar(["After\nRestatement"], [row["after"]],
-               color=colors[name], alpha=0.5, width=0.5, zorder=3)
-        ax.set_title(node_labels.get(name, name), fontsize=11, fontweight="bold")
+        ax.bar([0], [row["before"]], color="black",  width=0.5)
+        ax.bar([1], [row["after"]],  color="#888888", width=0.5)
+        ax.set_xticks([0, 1])
+        ax.set_xticklabels(["Before", "After"])
+        ax.set_title(node_labels.get(row["node"], row["node"]),
+                     fontsize=10, fontweight="normal", pad=10)
         ax.set_ylabel(row["unit"])
-        ax.grid(True, axis="y", alpha=0.25)
+        ax.spines["left"].set_position(("outward", 6))
+        ax.spines["bottom"].set_position(("outward", 6))
         mid = (row["before"] + row["after"]) / 2
-        ax.annotate(
-            f"Δ {row['delta']:+.2f}",
-            xy=(0.5, mid),
-            xycoords=("axes fraction", "data"),
-            ha="center",
-            fontsize=11,
-            color=colors[name],
-            fontweight="bold",
-        )
+        ax.text(0.5, mid, f"{row['delta']:+.2f}",
+                ha="center", va="center", fontsize=10, color="#333333")
 
     fig.suptitle(
-        "The cascade: Shell's 2004 restatement propagating through the model\n"
-        "(proved reserves → EUR → NPV, as known on 2003-09-01 vs 2004-05-01)",
-        fontsize=12,
-    )
+        "Shell 2004 restatement: proved reserves → EUR → NPV\n"
+        "(as known on 2003-09-01 vs 2004-05-01)",
+        fontsize=11, fontweight="normal")
     fig.tight_layout()
     out = os.path.join(FIGURES, "fig6_cascade_waterfall.png")
     fig.savefig(out, dpi=130)

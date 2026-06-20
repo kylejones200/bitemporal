@@ -213,42 +213,36 @@ def benchmark_naive_vs_duckdb(
 
 # ------------------------------------------------------------------ #
 if __name__ == "__main__":
-    import matplotlib
-    matplotlib.use("Agg")
+    import matplotlib as mpl
     import matplotlib.pyplot as plt
+    mpl.use("Agg")
+    mpl.rcParams.update({"font.family": "serif", "axes.grid": False,
+                         "axes.spines.top": False, "axes.spines.right": False})
 
     print("Benchmarking pandas vs DuckDB bitemporal as-of join...\n")
-    results = benchmark_naive_vs_duckdb()
+    results = benchmark_naive_vs_duckdb(sizes=[200, 1_000, 5_000, 20_000, 75_000])
 
-    fig, ax = plt.subplots(figsize=(10, 6))
-    ax.loglog(
-        results["n_rows"], results["pandas_s"],
-        "o-", color="#1f4e79", lw=2.2, ms=7, label="pandas groupby + idxmax",
-    )
-    ax.loglog(
-        results["n_rows"], results["duckdb_s"],
-        "s-", color="#b3122f", lw=2.2, ms=7, label="DuckDB (vectorised window)",
-    )
+    fig, ax = plt.subplots(figsize=(10, 5))
+    ax.loglog(results["n_rows"], results["pandas_s"],
+              "o-",  color="black",   lw=1.8, ms=5, label="pandas groupby + idxmax")
+    ax.loglog(results["n_rows"], results["duckdb_s"],
+              "s--", color="#777777", lw=1.8, ms=5, label="DuckDB vectorised window")
+
     for _, row in results.iterrows():
-        if row["pandas_s"] > 0 and row["duckdb_s"] > 0:
-            ax.annotate(
-                f"×{row['speedup']:.0f}",
-                xy=(row["n_rows"], row["pandas_s"]),
-                xytext=(0, 10),
-                textcoords="offset points",
-                ha="center",
-                fontsize=9,
-                color="#555",
-            )
+        if row["speedup"] >= 1.5:
+            ax.annotate(f"×{row['speedup']:.0f}",
+                        xy=(row["n_rows"], row["pandas_s"]),
+                        xytext=(0, 9), textcoords="offset points",
+                        ha="center", fontsize=8.5, color="#444444")
+
+    ax.spines["left"].set_position(("outward", 8))
+    ax.spines["bottom"].set_position(("outward", 8))
     ax.set_xlabel("Rows in the bitemporal panel (log scale)")
-    ax.set_ylabel("As-of query time (seconds, log scale)")
-    ax.set_title(
-        "Bitemporal as-of join: pandas vs DuckDB\n"
-        "(synthetic well production panel, 24 months × 3 vintages per well)",
-        fontsize=12,
-    )
-    ax.legend(frameon=False)
-    ax.grid(True, which="both", alpha=0.2)
+    ax.set_ylabel("As-of query time, seconds (log scale)")
+    ax.set_title("Bitemporal as-of join: pandas vs DuckDB\n"
+                 "(synthetic well production, 24 months × 3 vintages per well)",
+                 fontsize=11, fontweight="normal", pad=14)
+    ax.legend(frameon=False, fontsize=9)
     fig.tight_layout()
     out = os.path.join(FIGURES, "fig7_scale_benchmark.png")
     fig.savefig(out, dpi=130)

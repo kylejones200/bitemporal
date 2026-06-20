@@ -120,9 +120,11 @@ def revision_signature(series: BitemporalSeries) -> pd.DataFrame:
 # Standalone demo + figure generation
 # ------------------------------------------------------------------ #
 if __name__ == "__main__":
-    import matplotlib
-    matplotlib.use("Agg")
+    import matplotlib as mpl
     import matplotlib.pyplot as plt
+    mpl.use("Agg")
+    mpl.rcParams.update({"font.family": "serif", "axes.grid": False,
+                         "axes.spines.top": False, "axes.spines.right": False})
 
     csv_path = os.path.join(DATA, "unrate_vintages.csv")
     s = BitemporalSeries.from_csv(csv_path)
@@ -138,38 +140,29 @@ if __name__ == "__main__":
         .to_string()
     )
 
-    type_colors = {
-        "late_data": "#e07b39",
-        "seasonal": "#1f4e79",
-        "benchmark": "#b3122f",
-    }
-    type_labels = {
+    markers = {"late_data": "o", "seasonal": "s", "benchmark": "^"}
+    shades  = {"late_data": "#000000", "seasonal": "#555555", "benchmark": "#999999"}
+    labels  = {
         "late_data": "Late data (lag ≤ 3 months)",
-        "seasonal": "Seasonal re-estimation (4–60 months)",
+        "seasonal":  "Seasonal re-estimation (4–60 months)",
         "benchmark": "Benchmark / population control (> 60 months)",
     }
 
-    fig, ax = plt.subplots(figsize=(10, 6))
+    fig, ax = plt.subplots(figsize=(10, 5))
     for rtype, grp in sig.groupby("revision_type"):
-        ax.scatter(
-            grp["lag_months"],
-            grp["delta"].abs(),
-            color=type_colors.get(rtype, "gray"),
-            label=type_labels.get(rtype, rtype),
-            alpha=0.75,
-            s=70,
-            zorder=3,
-        )
+        ax.scatter(grp["lag_months"], grp["delta"],
+                   color=shades[rtype], marker=markers[rtype],
+                   s=55, zorder=3, label=labels[rtype])
 
+    ax.axhline(0, color="#cccccc", lw=0.8)
+    ax.spines["left"].set_position(("outward", 8))
+    ax.spines["bottom"].set_position(("outward", 8))
     ax.set_xlabel("Lag (months between period and knowledge date)")
-    ax.set_ylabel("Revision magnitude (Δ percentage points, absolute)")
-    ax.set_title(
-        "Revision size vs. lag by mechanism: U.S. unemployment rate\n"
-        "(every revision event between three real BLS vintages)",
-        fontsize=12,
-    )
-    ax.legend(frameon=False)
-    ax.grid(True, alpha=0.25)
+    ax.set_ylabel("Revision (Δ percentage points)")
+    ax.set_title("Revision size vs. lag by mechanism: U.S. unemployment rate\n"
+                 "(every revision event between three real BLS vintages)",
+                 fontsize=11, fontweight="normal", pad=14)
+    ax.legend(frameon=False, fontsize=9)
     fig.tight_layout()
     out = os.path.join(FIGURES, "fig5_revision_signature.png")
     fig.savefig(out, dpi=130)
